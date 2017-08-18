@@ -11,7 +11,7 @@ public:
     typedef std::vector<double>::size_type size_type;
 
     // constructors
-    ThreadSafeHeap(size_type& count); //TODO consider noexcept variant
+    ThreadSafeHeap(size_type count); //TODO consider noexcept variant
 
     //indexing
     double& operator[](size_type index);
@@ -41,4 +41,5 @@ private:
     std::vector<double> _data;
 };
 
+#include "peano/heap/ThreadSafeHeap.cpph"
 #endif /* _PEANO_THREADSAFE_HEAP_H */

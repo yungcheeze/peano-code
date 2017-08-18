@@ -1,7 +1,6 @@
-#include "ThreadSafeHeap.h"
 
 //constructors
-inline ThreadSafeHeap::ThreadSafeHeap(size_type& count): _data(count) {}
+inline ThreadSafeHeap::ThreadSafeHeap(size_type count): _data(count) {}
 
 //indexing
 inline double& ThreadSafeHeap::operator[](size_type index) {
