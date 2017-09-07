@@ -1,6 +1,9 @@
 #ifndef _PEANO_THREADSAFE_HEAP_H
 #define _PEANO_THREADSAFE_HEAP_H
 
+#include "tarch/Logging/Log.h"
+#include "tarch/Logging/CommandLineLogger.h"
+
 #include <vector>
 
 class ThreadSafeHeap
@@ -39,6 +42,7 @@ protected:
 
 private:
     std::vector<double> _data;
+    tarch::logging::Log _log;
 };
 
 #include "peano/heap/ThreadSafeHeap.cpph"

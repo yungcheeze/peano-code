@@ -1,3 +1,4 @@
+tarch::logging::Log _log("ThreadSafeHeap");
 
 //constructors
 inline ThreadSafeHeap::ThreadSafeHeap(size_type count): _data(count) {}
