@@ -42,7 +42,7 @@ protected:
 
 private:
     std::vector<double> _data;
-    tarch::logging::Log _log;
+    static tarch::logging::Log _log;
 };
 
 #endif /* _PEANO_THREADSAFE_HEAP_H */

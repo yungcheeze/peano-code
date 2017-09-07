@@ -1,6 +1,6 @@
 #include "peano/heap/ThreadSafeHeap.h"
 
-tarch::logging::Log _log("ThreadSafeHeap");
+tarch::logging::Log ThreadSafeHeap::_log("ThreadSafeHeap");
 
 //constructors
 inline ThreadSafeHeap::ThreadSafeHeap(size_type count): _data(count) {}
