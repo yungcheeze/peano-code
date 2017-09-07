@@ -1,3 +1,5 @@
+#include "peano/heap/ThreadSafeHeap.h"
+
 tarch::logging::Log _log("ThreadSafeHeap");
 
 //constructors

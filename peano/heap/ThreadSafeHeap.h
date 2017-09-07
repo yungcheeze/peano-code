@@ -1,8 +1,8 @@
 #ifndef _PEANO_THREADSAFE_HEAP_H
 #define _PEANO_THREADSAFE_HEAP_H
 
-#include "tarch/Logging/Log.h"
-#include "tarch/Logging/CommandLineLogger.h"
+#include "tarch/logging/Log.h"
+#include "tarch/logging/CommandLineLogger.h"
 
 #include <vector>
 
@@ -45,5 +45,4 @@ private:
     tarch::logging::Log _log;
 };
 
-#include "peano/heap/ThreadSafeHeap.cpph"
 #endif /* _PEANO_THREADSAFE_HEAP_H */
