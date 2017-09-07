@@ -3,7 +3,9 @@
 tarch::logging::Log ThreadSafeHeap::_log("ThreadSafeHeap");
 
 //constructors
-inline ThreadSafeHeap::ThreadSafeHeap(size_type count): _data(count) {}
+ThreadSafeHeap::ThreadSafeHeap(size_type count): _data(count) {
+    logInfo( "ThreadSafeHeap()", "constructor" << count );
+}
 
 //indexing
 inline double& ThreadSafeHeap::operator[](size_type index) {
@@ -42,11 +44,18 @@ inline const double* ThreadSafeHeap::data() const {
 }
 
 //memory management
-inline void ThreadSafeHeap::clear() { _data.clear(); }
-inline void ThreadSafeHeap::shrink_to_fit() { _data.shrink_to_fit(); }
+inline void ThreadSafeHeap::clear() {
+    _data.clear();
+}
+inline void ThreadSafeHeap::shrink_to_fit() {
+    logInfo( "shrink_to_fit()", "shrink_to_fit" );
+    _data.shrink_to_fit();
+}
 inline void ThreadSafeHeap::resize(size_type count) {
+    logInfo( "resize()", "resize" << count);
    _data.resize(count);
 }
 inline void ThreadSafeHeap::reserve(size_type count) {
+    logInfo( "reserve()", "reserve" << count);
     _data.reserve(count);
 }
