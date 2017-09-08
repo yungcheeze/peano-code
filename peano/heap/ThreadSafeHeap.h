@@ -6,43 +6,50 @@
 
 #include <vector>
 
-class ThreadSafeHeap
-{
-public:
-    typedef std::vector<double>::iterator iterator;
-    typedef std::vector<double>::const_iterator const_iterator;
-    typedef std::vector<double>::size_type size_type;
+namespace peano {
+    namespace heap {
 
-    // constructors
-    ThreadSafeHeap(size_type count); //TODO consider noexcept variant
+        class ThreadSafeHeap
+        {
+        public:
+            typedef std::vector<double>::iterator iterator;
+            typedef std::vector<double>::const_iterator const_iterator;
+            typedef std::vector<double>::size_type size_type;
 
-    //indexing
-    double& operator[](size_type index);
-    const double& operator[](size_type index) const;
+            // constructors
+            ThreadSafeHeap(size_type count); //TODO consider noexcept variant
 
-    //iterators
-    iterator begin();
-    const_iterator begin() const;
+            //indexing
+            double& operator[](size_type index);
+            const double& operator[](size_type index) const;
 
-    iterator end();
-    const_iterator end() const;
+            //iterators
+            iterator begin();
+            const_iterator begin() const;
 
-    //data: return pointer to underlying array
-    double* data();
-    const double* data() const;
+            iterator end();
+            const_iterator end() const;
 
-    // memory management
-    void clear();
-    void shrink_to_fit();
-    void resize(size_type count);
-    void reserve(size_type count);
+            //data: return pointer to underlying array
+            double* data();
+            const double* data() const;
+
+            // memory management
+            void clear();
+            void shrink_to_fit();
+            void resize(size_type count);
+            void reserve(size_type count);
 
 
-protected:
+        protected:
 
-private:
-    std::vector<double> _data;
-    static tarch::logging::Log _log;
-};
+        private:
+            std::vector<double> _data;
+            static tarch::logging::Log _log;
+        };       
+
+    }  // heap
+}  // peano
+
 
 #endif /* _PEANO_THREADSAFE_HEAP_H */
