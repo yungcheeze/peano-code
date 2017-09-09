@@ -5,6 +5,7 @@
 #include "tarch/logging/CommandLineLogger.h"
 
 #include <vector>
+#include <cstddef>
 
 namespace peano {
     namespace heap {
@@ -18,6 +19,7 @@ namespace peano {
 
             // constructors
             ThreadSafeHeap(size_type count); //TODO consider noexcept variant
+            ~ThreadSafeHeap();
 
             //indexing
             double& operator[](size_type index);
@@ -44,9 +46,11 @@ namespace peano {
         protected:
 
         private:
-            std::vector<double> _data;
             static tarch::logging::Log _log;
-        };       
+            static std::size_t _numObj;
+
+            std::vector<double> _data;
+        };
 
     }  // heap
 }  // peano

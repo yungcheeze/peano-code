@@ -1,10 +1,29 @@
 #include "peano/heap/ThreadSafeHeap.h"
 
 tarch::logging::Log peano::heap::ThreadSafeHeap::_log("peano::heap::ThreadSafeHeap");
+std::size_t peano::heap::ThreadSafeHeap::_numObj = 0;
+inline size_t memoryUsage(std::vector<double>& data) {
+    return sizeof(double) * data.size();
+}
+//Constructors
+peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
+    _data(count)
+{
+    logInfo( "ThreadSafeHeap()",
+             "constructor: "
+             << "mem_alloc " << memoryUsage(_data) << "b; ");
 
-//constructors
-peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count): _data(count) {
-    logInfo( "ThreadSafeHeap()", "constructor" << count );
+    _numObj++;
+    logInfo( "ThreadSafeHeap()", "numObj " << _numObj );
+    logInfo( "ThreadSafeHeap()", "total_mem " << _numObj * memoryUsage(_data) );
+}
+
+//destructor
+peano::heap::ThreadSafeHeap::~ThreadSafeHeap() {
+    logInfo( "~ThreadSafeHeap()", "destructor: " );
+
+    _numObj--;
+    logInfo( "ThreadSafeHeap()", "numObj " << _numObj );
 }
 
 //indexing
@@ -48,14 +67,11 @@ void peano::heap::ThreadSafeHeap::clear() {
     _data.clear();
 }
 void peano::heap::ThreadSafeHeap::shrink_to_fit() {
-    logInfo( "shrink_to_fit()", "shrink_to_fit" );
     _data.shrink_to_fit();
 }
 void peano::heap::ThreadSafeHeap::resize(size_type count) {
-    logInfo( "resize()", "resize" << count);
-   _data.resize(count);
+    _data.resize(count);
 }
 void peano::heap::ThreadSafeHeap::reserve(size_type count) {
-    logInfo( "reserve()", "reserve" << count);
     _data.reserve(count);
 }
