@@ -2,8 +2,8 @@
 
 tarch::logging::Log peano::heap::ThreadSafeHeap::_log("peano::heap::ThreadSafeHeap");
 std::size_t peano::heap::ThreadSafeHeap::_numObj = 0;
-inline size_t memoryUsage(std::vector<double>& data) {
-    return sizeof(double) * data.size();
+inline size_t inBytes(const std::vector<double>::size_type& size) {
+    return sizeof(double) * size;
 }
 //Constructors
 peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
