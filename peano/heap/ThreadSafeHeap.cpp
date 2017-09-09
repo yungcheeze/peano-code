@@ -11,11 +11,11 @@ peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
 {
     logInfo( "ThreadSafeHeap()",
              "constructor: "
-             << "mem_alloc " << memoryUsage(_data) << "b; ");
+             << "size " << inBytes(_data.size()) << "b; ");
 
     _numObj++;
     logInfo( "ThreadSafeHeap()", "numObj " << _numObj );
-    logInfo( "ThreadSafeHeap()", "total_mem " << _numObj * memoryUsage(_data) );
+    logInfo( "ThreadSafeHeap()", "total_mem " << _numObj * inBytes(_data.size()) );
 }
 
 //destructor
@@ -64,14 +64,42 @@ const double* peano::heap::ThreadSafeHeap::data() const {
 
 //memory management
 void peano::heap::ThreadSafeHeap::clear() {
+    logInfo("clear()", "clear");
     _data.clear();
 }
 void peano::heap::ThreadSafeHeap::shrink_to_fit() {
+    size_type old_capacity = _data.capacity();
+    size_type old_size = _data.size();
     _data.shrink_to_fit();
+    size_type new_capacity = _data.capacity();
+    size_type new_size = _data.size();
+    logInfo("shrink_to_fit()", "shrink_to_fit: "
+            << "old_size " << inBytes(old_size) << "b; "
+            << "old_capacity " << inBytes(old_capacity) << "b; "
+            << "new_size " << inBytes(new_size) << "b; "
+            << "new_capacity " << inBytes(new_capacity) << "b; ");
 }
 void peano::heap::ThreadSafeHeap::resize(size_type count) {
+    size_type old_capacity = _data.capacity();
+    size_type old_size = _data.size();
     _data.resize(count);
+    size_type new_capacity = _data.capacity();
+    size_type new_size = _data.size();
+    logInfo("resize()", "resize: "
+            << "old_size " << inBytes(old_size) << "b; "
+            << "old_capacity " << inBytes(old_capacity) << "b; "
+            << "new_size " << inBytes(new_size) << "b; "
+            << "new_capacity " << inBytes(new_capacity) << "b; ");
 }
 void peano::heap::ThreadSafeHeap::reserve(size_type count) {
+    size_type old_capacity = _data.capacity();
+    size_type old_size = _data.size();
     _data.reserve(count);
+    size_type new_capacity = _data.capacity();
+    size_type new_size = _data.size();
+    logInfo("reserve()", "reserve: "
+            << "old_size " << inBytes(old_size) << "b; "
+            << "old_capacity " << inBytes(old_capacity) << "b; "
+            << "new_size " << inBytes(new_size) << "b; "
+            << "new_capacity " << inBytes(new_capacity) << "b; ");
 }
