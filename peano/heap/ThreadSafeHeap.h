@@ -48,6 +48,7 @@ namespace peano {
         private:
             static tarch::logging::Log _log;
             static std::size_t _numObj;
+            static double _totalMem;
 
             std::vector<double> _data;
         };
