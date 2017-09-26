@@ -2,6 +2,7 @@
 
 tarch::logging::Log peano::heap::ThreadSafeHeap::_log("peano::heap::ThreadSafeHeap");
 std::size_t peano::heap::ThreadSafeHeap::_numObj = 0;
+std::size_t peano::heap::ThreadSafeHeap::_totalMem = 0;
 inline size_t inBytes(const std::vector<double>::size_type& size) {
     return sizeof(double) * size;
 }
@@ -14,7 +15,7 @@ peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
              << "size " << inBytes(_data.size()) << "b; ");
 
     ++_numObj;
-    _totalMem += inBytes(_data.size())
+    _totalMem += inBytes(_data.size());
     logInfo( "ThreadSafeHeap()", "numObj " << _numObj );
     logInfo( "ThreadSafeHeap()", "total_mem " << _totalMem);
 }
@@ -24,7 +25,7 @@ peano::heap::ThreadSafeHeap::~ThreadSafeHeap() {
     logInfo( "~ThreadSafeHeap()", "destructor: " );
 
     _numObj--;
-    _totalMem -= inBytes(_data.size())
+    _totalMem -= inBytes(_data.size());
     logInfo( "ThreadSafeHeap()", "numObj " << _numObj );
 }
 
