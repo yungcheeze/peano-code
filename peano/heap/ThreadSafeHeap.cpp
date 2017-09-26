@@ -63,6 +63,8 @@ const double* peano::heap::ThreadSafeHeap::data() const {
 
 //memory management
 void peano::heap::ThreadSafeHeap::clear() {
+    logInfo("clear()", "clear: "
+            << "mem_freed " << inBytes(_data.size()));
     _data.clear();
 }
 
