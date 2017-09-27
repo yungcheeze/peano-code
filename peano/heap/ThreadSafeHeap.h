@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <cstddef>
+#include <atomic>
 
 namespace peano {
     namespace heap {
@@ -47,8 +48,9 @@ namespace peano {
 
         private:
             static tarch::logging::Log _log;
-            static std::size_t _numObj;
+            static std::atomic_size_t _objCount;
 
+            std::atomic_size_t _id;
             std::vector<double> _data;
         };
 
