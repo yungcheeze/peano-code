@@ -110,7 +110,7 @@ void peano::heap::ThreadSafeHeap::resize(size_type count) {
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
     logInfo("resize()", "resize: "
-            << "id " << _id << "b; "
+            << "id " << _id << "; "
             << "old_size " << inBytes(old_size) << "b; "
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
@@ -133,7 +133,7 @@ void peano::heap::ThreadSafeHeap::reserve(size_type count) {
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
     logInfo("reserve()", "reserve: "
-            << "id " << _id << "b; "
+            << "id " << _id << "; "
             << "old_size " << inBytes(old_size) << "b; "
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
