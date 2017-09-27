@@ -50,7 +50,7 @@ namespace peano {
             static tarch::logging::Log _log;
             static std::atomic_size_t _objCount;
 
-            std::atomic_size_t _id;
+            std::size_t _id;
             std::vector<double> _data;
         };
 
