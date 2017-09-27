@@ -1,16 +1,17 @@
 #include "peano/heap/ThreadSafeHeap.h"
 
 tarch::logging::Log peano::heap::ThreadSafeHeap::_log("peano::heap::ThreadSafeHeap");
-std::atomic_size_t peano::heap::ThreadSafeHeap::_objCount = 0;
-std::atomic_size_t peano::heap::ThreadSafeHeap::_totalCap = 0;
-std::atomic_size_t peano::heap::ThreadSafeHeap::_totalSize = 0;
+std::atomic_size_t peano::heap::ThreadSafeHeap::_objCount;
+std::atomic_size_t peano::heap::ThreadSafeHeap::_totalCap;
+std::atomic_size_t peano::heap::ThreadSafeHeap::_totalSize;
 
 inline size_t inBytes(const std::vector<double>::size_type& size) {
     return sizeof(double) * size;
 }
 //Constructors
 peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
-    _data(count), _id(++_objCount)
+    _id(++_objCount),
+    _data(count)
 {
     logInfo( "ThreadSafeHeap()",
              "constructor: "
