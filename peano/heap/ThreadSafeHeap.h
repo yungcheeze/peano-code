@@ -49,6 +49,8 @@ namespace peano {
         private:
             static tarch::logging::Log _log;
             static std::atomic_size_t _objCount;
+            static std::atomic_size_t _totalCap;
+            static std::atomic_size_t _totalSize;
 
             std::size_t _id;
             std::vector<double> _data;

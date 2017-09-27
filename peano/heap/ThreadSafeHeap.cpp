@@ -2,6 +2,8 @@
 
 tarch::logging::Log peano::heap::ThreadSafeHeap::_log("peano::heap::ThreadSafeHeap");
 std::atomic_size_t peano::heap::ThreadSafeHeap::_objCount = 0;
+std::atomic_size_t peano::heap::ThreadSafeHeap::_totalCap = 0;
+std::atomic_size_t peano::heap::ThreadSafeHeap::_totalSize = 0;
 
 inline size_t inBytes(const std::vector<double>::size_type& size) {
     return sizeof(double) * size;
@@ -14,12 +16,24 @@ peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
              "constructor: "
              << "id " << _id << "; "
              << "size " << inBytes(_data.size()) << "b; ");
+
+    _totalCap += inBytes(_data.capacity());
+    logInfo( "ThreadSafeHeap()", "total_capacity " << _totalCap);
+
+    _totalSize += inBytes(_data.capacity());
+    logInfo( "ThreadSafeHeap()", "total_size " << _totalSize);
 }
 
 //destructor
 peano::heap::ThreadSafeHeap::~ThreadSafeHeap() {
     logInfo( "~ThreadSafeHeap()", "destructor: " 
              << "id " << _id << "; ");
+
+    _totalCap -= inBytes(_data.capacity());
+    logInfo( "~ThreadSafeHeap()", "total_capacity " << _totalCap);
+
+    _totalSize -= inBytes(_data.size());
+    logInfo( "~ThreadSafeHeap()", "total_size " << _totalSize);
 }
 
 //indexing
@@ -63,6 +77,10 @@ void peano::heap::ThreadSafeHeap::clear() {
     logInfo("clear()", "clear: "
             << "id " << _id << "; "
             << "mem_freed " << inBytes(_data.size()));
+
+    _totalSize -= inBytes(_data.size());
+    logInfo( "clear()", "total_size " << _totalSize);
+
     _data.clear();
 }
 
@@ -78,6 +96,11 @@ void peano::heap::ThreadSafeHeap::shrink_to_fit() {
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
             << "new_capacity " << inBytes(new_capacity) << "b; ");
+
+    if (new_capacity != old_capacity) {
+        _totalCap += inBytes(new_capacity - old_capacity);
+        logInfo( "shrink_to_fit()", "total_capacity " << _totalCap);
+    }
 }
 
 void peano::heap::ThreadSafeHeap::resize(size_type count) {
@@ -92,6 +115,15 @@ void peano::heap::ThreadSafeHeap::resize(size_type count) {
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
             << "new_capacity " << inBytes(new_capacity) << "b; ");
+
+    if (new_capacity != old_capacity) {
+        _totalCap += inBytes(new_capacity - old_capacity);
+        logInfo( "resize()", "total_capacity " << _totalCap);
+    }
+    if (new_size != old_size) {
+        _totalSize += inBytes(new_size - old_size);
+        logInfo( "resize()", "total_size " << _totalSize);
+    }
 }
 
 void peano::heap::ThreadSafeHeap::reserve(size_type count) {
@@ -106,4 +138,9 @@ void peano::heap::ThreadSafeHeap::reserve(size_type count) {
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
             << "new_capacity " << inBytes(new_capacity) << "b; ");
+
+    if (new_capacity != old_capacity) {
+        _totalCap += inBytes(new_capacity - old_capacity);
+        logInfo( "reserve()", "total_capacity " << _totalCap);
+    }
 }
