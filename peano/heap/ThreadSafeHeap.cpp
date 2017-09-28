@@ -14,7 +14,7 @@ peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
 {
     logInfo( "ThreadSafeHeap()",
              "constructor: "
-             << "size " << inBytes(_data.size()) << "b; ");
+             << "size " << inBytes(_data.capacity()) << "b; ");
 
     _totalCap += inBytes(_data.capacity());
     logInfo( "ThreadSafeHeap()", "total_capacity " << _totalCap);
@@ -30,7 +30,7 @@ peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
 //destructor
 peano::heap::ThreadSafeHeap::~ThreadSafeHeap() {
     logInfo( "~ThreadSafeHeap()", "destructor: "
-             << "mem_freed " << inBytes(_data.size()) << "b; ");
+             << "mem_freed " << inBytes(_data.capacity()) << "b; ");
 
     _totalCap -= inBytes(_data.capacity());
     logInfo( "~ThreadSafeHeap()", "total_capacity " << _totalCap);
