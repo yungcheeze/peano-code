@@ -19,19 +19,28 @@ peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
     _totalCap += inBytes(_data.capacity());
     logInfo( "ThreadSafeHeap()", "total_capacity " << _totalCap);
 
-    _totalSize += inBytes(_data.capacity());
+    _totalSize += inBytes(_data.size());
     logInfo( "ThreadSafeHeap()", "total_size " << _totalSize);
+
+    ++_objCount;
+
+    logInfo( "ThreadSafeHeap()", "num_obj " << _objCount);
 }
 
 //destructor
 peano::heap::ThreadSafeHeap::~ThreadSafeHeap() {
-    logInfo( "~ThreadSafeHeap()", "destructor: " );
+    logInfo( "~ThreadSafeHeap()", "destructor: "
+             << "mem_freed " << inBytes(_data.size()) << "b; ");
 
     _totalCap -= inBytes(_data.capacity());
     logInfo( "~ThreadSafeHeap()", "total_capacity " << _totalCap);
 
     _totalSize -= inBytes(_data.size());
     logInfo( "~ThreadSafeHeap()", "total_size " << _totalSize);
+
+    --_objCount;
+
+    logInfo( "~ThreadSafeHeap()", "num_obj " << _objCount);
 }
 
 //indexing
@@ -73,7 +82,7 @@ const double* peano::heap::ThreadSafeHeap::data() const {
 //memory management
 void peano::heap::ThreadSafeHeap::clear() {
     logInfo("clear()", "clear: "
-            << "mem_freed " << inBytes(_data.size()));
+            << "mem_released " << inBytes(_data.size()) << "b; ");
 
     _totalSize -= inBytes(_data.size());
     logInfo( "clear()", "total_size " << _totalSize);
@@ -87,13 +96,13 @@ void peano::heap::ThreadSafeHeap::shrink_to_fit() {
     _data.shrink_to_fit();
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
-    logInfo("shrink_to_fit()", "shrink_to_fit: "
-            << "old_size " << inBytes(old_size) << "b; "
-            << "old_capacity " << inBytes(old_capacity) << "b; "
-            << "new_size " << inBytes(new_size) << "b; "
-            << "new_capacity " << inBytes(new_capacity) << "b; ");
 
     if (new_capacity != old_capacity) {
+        logInfo("shrink_to_fit()", "shrink_to_fit: "
+                << "old_size " << inBytes(old_size) << "b; "
+                << "old_capacity " << inBytes(old_capacity) << "b; "
+                << "new_size " << inBytes(new_size) << "b; "
+                << "new_capacity " << inBytes(new_capacity) << "b; ");
         _totalCap += inBytes(new_capacity - old_capacity);
         logInfo( "shrink_to_fit()", "total_capacity " << _totalCap);
     }
@@ -105,19 +114,25 @@ void peano::heap::ThreadSafeHeap::resize(size_type count) {
     _data.resize(count);
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
-    logInfo("resize()", "resize: "
-            << "old_size " << inBytes(old_size) << "b; "
-            << "old_capacity " << inBytes(old_capacity) << "b; "
-            << "new_size " << inBytes(new_size) << "b; "
-            << "new_capacity " << inBytes(new_capacity) << "b; ");
 
-    if (new_capacity != old_capacity) {
-        _totalCap += inBytes(new_capacity - old_capacity);
-        logInfo( "resize()", "total_capacity " << _totalCap);
-    }
-    if (new_size != old_size) {
-        _totalSize += inBytes(new_size - old_size);
-        logInfo( "resize()", "total_size " << _totalSize);
+    bool cap_changed = new_capacity - old_capacity;
+    bool size_changed = new_size - old_size;
+
+    if (cap_changed || size_changed) {
+        logInfo("resize()", "resize: "
+                << "old_size " << inBytes(old_size) << "b; "
+                << "old_capacity " << inBytes(old_capacity) << "b; "
+                << "new_size " << inBytes(new_size) << "b; "
+                << "new_capacity " << inBytes(new_capacity) << "b; ");
+        
+        if (cap_changed) {
+            _totalCap += inBytes(new_capacity - old_capacity);
+            logInfo( "resize()", "total_capacity " << _totalCap);
+        }
+        if (size_changed) {
+            _totalSize += inBytes(new_size - old_size);
+            logInfo( "resize()", "total_size " << _totalSize);
+        }
     }
 }
 
@@ -127,14 +142,21 @@ void peano::heap::ThreadSafeHeap::reserve(size_type count) {
     _data.reserve(count);
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
-    logInfo("reserve()", "reserve: "
-            << "old_size " << inBytes(old_size) << "b; "
-            << "old_capacity " << inBytes(old_capacity) << "b; "
-            << "new_size " << inBytes(new_size) << "b; "
-            << "new_capacity " << inBytes(new_capacity) << "b; ");
 
-    if (new_capacity != old_capacity) {
-        _totalCap += inBytes(new_capacity - old_capacity);
-        logInfo( "reserve()", "total_capacity " << _totalCap);
+    bool cap_changed = new_capacity - old_capacity;
+    bool size_changed = new_size - old_size;
+
+    if (cap_changed || size_changed) {
+        
+        logInfo("reserve()", "reserve: "
+                << "old_size " << inBytes(old_size) << "b; "
+                << "old_capacity " << inBytes(old_capacity) << "b; "
+                << "new_size " << inBytes(new_size) << "b; "
+                << "new_capacity " << inBytes(new_capacity) << "b; ");
+
+        if (cap_changed) {
+            _totalCap += inBytes(new_capacity - old_capacity);
+            logInfo( "reserve()", "total_capacity " << _totalCap);
+        }
     }
 }
