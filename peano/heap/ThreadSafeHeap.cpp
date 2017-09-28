@@ -10,12 +10,10 @@ inline size_t inBytes(const std::vector<double>::size_type& size) {
 }
 //Constructors
 peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
-    _id(++_objCount),
     _data(count)
 {
     logInfo( "ThreadSafeHeap()",
              "constructor: "
-             << "id " << _id << "; "
              << "size " << inBytes(_data.size()) << "b; ");
 
     _totalCap += inBytes(_data.capacity());
@@ -27,8 +25,7 @@ peano::heap::ThreadSafeHeap::ThreadSafeHeap(size_type count):
 
 //destructor
 peano::heap::ThreadSafeHeap::~ThreadSafeHeap() {
-    logInfo( "~ThreadSafeHeap()", "destructor: " 
-             << "id " << _id << "; ");
+    logInfo( "~ThreadSafeHeap()", "destructor: " );
 
     _totalCap -= inBytes(_data.capacity());
     logInfo( "~ThreadSafeHeap()", "total_capacity " << _totalCap);
@@ -76,7 +73,6 @@ const double* peano::heap::ThreadSafeHeap::data() const {
 //memory management
 void peano::heap::ThreadSafeHeap::clear() {
     logInfo("clear()", "clear: "
-            << "id " << _id << "; "
             << "mem_freed " << inBytes(_data.size()));
 
     _totalSize -= inBytes(_data.size());
@@ -92,7 +88,6 @@ void peano::heap::ThreadSafeHeap::shrink_to_fit() {
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
     logInfo("shrink_to_fit()", "shrink_to_fit: "
-            << "id " << _id << "; "
             << "old_size " << inBytes(old_size) << "b; "
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
@@ -111,7 +106,6 @@ void peano::heap::ThreadSafeHeap::resize(size_type count) {
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
     logInfo("resize()", "resize: "
-            << "id " << _id << "; "
             << "old_size " << inBytes(old_size) << "b; "
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
@@ -134,7 +128,6 @@ void peano::heap::ThreadSafeHeap::reserve(size_type count) {
     size_type new_capacity = _data.capacity();
     size_type new_size = _data.size();
     logInfo("reserve()", "reserve: "
-            << "id " << _id << "; "
             << "old_size " << inBytes(old_size) << "b; "
             << "old_capacity " << inBytes(old_capacity) << "b; "
             << "new_size " << inBytes(new_size) << "b; "
