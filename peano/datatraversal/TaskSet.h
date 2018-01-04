@@ -134,7 +134,7 @@ class peano::datatraversal::TaskSet {
     template <class Functor>
     inline TaskSet(
       Functor&  task,
-      bool      isLongRunningOrPersistentTask
+      bool      isLongRunningOrPersistentTask=false
     );
 
     /**
