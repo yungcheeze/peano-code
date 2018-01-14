@@ -16,6 +16,7 @@
 
 #include "peano/heap/Heap.h"
 #include "peano/heap/AlignedDoubleSendReceiveTask.h"
+#include "peano/heap/ThreadSafeHeap.h"
 
 
 #include "tarch/multicore/BooleanSemaphore.h"
@@ -27,7 +28,7 @@ namespace peano {
       class MasterWorkerExchanger,
       class JoinForkExchanger,
       class NeighbourDataExchanger,
-      class VectorContainer = std::vector<double>
+      class VectorContainer = ThreadSafeHeap
     >
     class DoubleHeap;
 
