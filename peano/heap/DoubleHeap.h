@@ -17,6 +17,7 @@
 #include "peano/heap/Heap.h"
 #include "peano/heap/AlignedDoubleSendReceiveTask.h"
 #include "peano/heap/ThreadSafeHeap.h"
+#include "peano/heap/RecycleBucket.h"
 
 
 #include "tarch/multicore/BooleanSemaphore.h"
@@ -160,7 +161,7 @@ class peano::heap::DoubleHeap: public tarch::services::Service, peano::heap::Abs
 
     RecycledAndDeletedEntriesContainer   _deletedHeapIndices;
 
-    RecycledAndDeletedEntriesContainer   _recycledHeapIndices;
+    RecycleBucket   _recycledHeapIndices;
 
     int _nextIndex;
 
