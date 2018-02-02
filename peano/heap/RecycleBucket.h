@@ -8,9 +8,16 @@ namespace peano {
   namespace heap {
     class RecycleBucket {
 
+    private:
+      typedef std::list<int> recycleList;
+      std::vector<recycleList> _data;
+
+      int get_bucket_index(const int& heap_size); //return 0 if heapsize < 0
+      //TODO consider running size
+
     public:
-      typedef std::list<int>::size_type size_type;
-      typedef std::list<int>::reference reference;
+      typedef recycleList::size_type size_type;
+      typedef recycleList::reference reference;
 
       RecycleBucket(): _data(10){}
       // virtual ~RecycleBucket(); //use default
@@ -24,12 +31,6 @@ namespace peano {
       reference front(const int& heap_size);
       void pop_front(const int& heap_size);
 
-    private:
-      typedef std::list<int> recycleList;
-      std::vector<recycleList> _data;
-
-      int get_bucket_index(const int& heap_size); //return 0 if heapsize < 0
-      //TODO consider running size
     };
 
   } //peano
