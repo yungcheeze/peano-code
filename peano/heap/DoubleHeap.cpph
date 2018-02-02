@@ -197,7 +197,7 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
   for (int i=0; i<numberOfEntries; i++) {
 
     VectorContainer* newData = new (std::nothrow) VectorContainer(numberOfEntries);
-    _recycledHeapIndices.insert(newData.capacity(), _nextIndex );
+    _recycledHeapIndices.push_back(newData.capacity(), _nextIndex );
     if (newData==nullptr) {
       logError( "createDataForIndex(int,int,int)", "memory allocation for recycle entry failed. Terminate" );
       //exit(-1);
@@ -233,10 +233,10 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
   lock.lock();
   
   if ( !_recycledHeapIndices.empty(numberOfEntries) && allocation!=Allocation::DoNotUseAnyRecycledEntry ) {
-    index = _recycledHeapIndices.pop_front(numberOfEntries);
+    index = _recycledHeapIndices.front(numberOfEntries);
     allocateNewEntry = false;
     // pop_front does this
-    // _recycledHeapIndices.erase(index);
+    _recycledHeapIndices.pop_front(numberOfEntries);
   }
   else if (!_deletedHeapIndices.empty() ){
     index = *_deletedHeapIndices.begin();
@@ -365,7 +365,7 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
 
   if (recycle) {
     getData(index).clear();
-    _recycledHeapIndices.push_back(getData(index).capacity());
+    _recycledHeapIndices.push_back(getData(index).capacity(), index);
   }
   else {
     getData(index).clear();

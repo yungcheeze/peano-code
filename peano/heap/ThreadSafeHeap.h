@@ -43,6 +43,13 @@ namespace peano {
       void resize(size_type count);
       void reserve(size_type count);
 
+      //size ops
+      size_type size() const {
+        return _data.size();
+      }
+      size_type capacity() const {
+        return _data.capacity();
+      }
 
     protected:
 

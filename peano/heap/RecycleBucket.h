@@ -18,6 +18,7 @@ namespace peano {
     public:
       typedef recycleList::size_type size_type;
       typedef recycleList::reference reference;
+      typedef recycleList::value_type value_type;
 
       RecycleBucket(): _data(10){}
       // virtual ~RecycleBucket(); //use default
