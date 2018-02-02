@@ -157,7 +157,7 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
 
   tarch::multicore::Lock lock(_recycleAndDeleteSemaphore);
   _deletedHeapIndices.erase(wantedIndex);
-  _recycledHeapIndices.erase(wantedIndex);
+  _recycledHeapIndices.remove(numberOfEntries, wantedIndex);
   
   if (_nextIndex<=wantedIndex){
     _nextIndex = wantedIndex+1;
@@ -195,9 +195,9 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
   tarch::multicore::Lock lock(_recycleAndDeleteSemaphore);
 
   for (int i=0; i<numberOfEntries; i++) {
-    _recycledHeapIndices.insert( _nextIndex );
 
     VectorContainer* newData = new (std::nothrow) VectorContainer(numberOfEntries);
+    _recycledHeapIndices.insert(newData.capacity(), _nextIndex );
     if (newData==nullptr) {
       logError( "createDataForIndex(int,int,int)", "memory allocation for recycle entry failed. Terminate" );
       //exit(-1);
@@ -222,7 +222,8 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
 
   int  index;
   bool allocateNewEntry;
-  if ( _recycledHeapIndices.empty() && allocation==Allocation::UseOnlyRecycledEntries) {
+  //TODO ensure this is semantically correct
+  if ( _recycledHeapIndices.empty(numberOfEntries) && allocation==Allocation::UseOnlyRecycledEntries) {
     logTraceOutWith1Argument( "createData()", "not served" );
     lock.free();
     return -1;
@@ -231,10 +232,11 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
   lock.free();
   lock.lock();
   
-  if ( !_recycledHeapIndices.empty() && allocation!=Allocation::DoNotUseAnyRecycledEntry ) {
-    index = *_recycledHeapIndices.begin();
+  if ( !_recycledHeapIndices.empty(numberOfEntries) && allocation!=Allocation::DoNotUseAnyRecycledEntry ) {
+    index = _recycledHeapIndices.pop_front(numberOfEntries);
     allocateNewEntry = false;
-    _recycledHeapIndices.erase(index);
+    // pop_front does this
+    // _recycledHeapIndices.erase(index);
   }
   else if (!_deletedHeapIndices.empty() ){
     index = *_deletedHeapIndices.begin();
@@ -363,7 +365,7 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
 
   if (recycle) {
     getData(index).clear();
-    _recycledHeapIndices.insert(index);
+    _recycledHeapIndices.push_back(getData(index).capacity());
   }
   else {
     getData(index).clear();
