@@ -299,7 +299,7 @@ VectorContainer& peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchange
   assertion4(_heapData.count(index)==1, _name, message, index, _heapData.size());
 
   #if defined(SharedTBB) || defined(SharedTBBInvade)
-  typename HeapContainer::accessor result;
+  typename HeapContainer::const_accessor result;
   _heapData.find(result,index);
   return *(result->second);
   #else
@@ -314,9 +314,16 @@ const VectorContainer& peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkEx
   #ifdef Asserts
   std::string message = "Trying to get heap data for unknown index. Has the index been initialized correctly?";
   #endif
-  assertion4(_heapData.find(index) != _heapData.end(), _name, message, index, _heapData.size());
+  assertion4(_heapData.count(index)==1, _name, message, index, _heapData.size());
+
+  #if defined(SharedTBB) || defined(SharedTBBInvade)
+  typename HeapContainer::const_accessor result;
+  _heapData.find(result,index);
+  return *(result->second);
+  #else
   assertionMsg(_heapData.at(index) != nullptr, _name << ": Null-pointer was stored in heap data map");
   return *(_heapData.at(index));
+  #endif
 }
 
 
