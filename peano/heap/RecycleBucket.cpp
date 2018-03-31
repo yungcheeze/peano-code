@@ -1,27 +1,32 @@
 #include "peano/heap/RecycleBucket.h"
 
+peano::heap::RecycleBucket::RecycleBucket(): _data() {
+  _data[-1] = recycleList();
+}
+
 int peano::heap::RecycleBucket::get_bucket_index(const int& heap_size) {
-  //prevent infinite looping when finding targetlevel
-  if (heap_size < 0) {
-    return 0;
-  }
+  return heap_size;
+}
 
-  //obtain bucket index corresponding to heap_size
-  // see https://stackoverflow.com/questions/994593/how-to-do-an-integer-log2-in-c
-  int index = heap_size;
-  unsigned int targetlevel = 0;
-  while (index >>= 1) ++targetlevel;
 
-  if (targetlevel >= _data.size()) {
-    return 0;
+peano::heap::RecycleBucket::recycleList& peano::heap::RecycleBucket::get_bucket(const int &index) {
+    if(_data.count(index) > 0) {
+      return _data[index];
+    } else {
+      return _data[-1];
+    }
+}
+
+void peano::heap::RecycleBucket::add_bucket(const int &index){
+  if(_data.count(index) == 0) {
+    _data[index] = recycleList();
   }
-  return targetlevel;
 }
 
 bool peano::heap::RecycleBucket::empty() const {
   bool empty = true;
   for (auto it = _data.begin(); it != _data.end(); ++it) {
-    if (!(it->empty())) {
+    if (!(it->second).empty()) {
       empty = false;
       break;
     }
@@ -31,33 +36,33 @@ bool peano::heap::RecycleBucket::empty() const {
 
 bool peano::heap::RecycleBucket::empty(const int& heap_size) {
   int index = get_bucket_index(heap_size);
-  return _data[index].empty();
+  return get_bucket(index).empty();
 }
 
 peano::heap::RecycleBucket::size_type peano::heap::RecycleBucket::size() const {
   size_type size = 0;
   for (auto it = _data.begin(); it != _data.end(); ++it) {
-    size += it->size();
+    size += (it->second).size();
   }
   return size;
 }
 
 void peano::heap::RecycleBucket::remove(const int &heap_size, const int &value) {
   int index = get_bucket_index(heap_size);
-  _data[index].remove(value);
+  get_bucket(index).remove(value);
 }
 
 void peano::heap::RecycleBucket::push_back(const int &heap_size, const int &value) {
   int index = get_bucket_index(heap_size);
-  _data[index].push_back(value);
+  get_bucket(index).push_back(value);
 }
 
 peano::heap::RecycleBucket::reference peano::heap::RecycleBucket::front(const int &heap_size) {
   int index = get_bucket_index(heap_size);
-  return _data[index].front();
+  return get_bucket(index).front();
 }
 
 void peano::heap::RecycleBucket::pop_front(const int &heap_size) {
   int index = get_bucket_index(heap_size);
-  _data[index].pop_front();
+  get_bucket(index).pop_front();
 }
