@@ -232,18 +232,23 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
   lock.free();
   lock.lock();
   
+  bool failedToGetRecycledIndex = true;
   if ( !_recycledHeapIndices.empty(numberOfEntries) && allocation!=Allocation::DoNotUseAnyRecycledEntry ) {
     index = _recycledHeapIndices.front(numberOfEntries);
-    allocateNewEntry = false;
-    // pop_front does this
+    failedToGetRecycledIndex = index == -1;
+    allocateNewEntry = failedToGetRecycledIndex;
     _recycledHeapIndices.pop_front(numberOfEntries);
   }
-  else if (!_deletedHeapIndices.empty() ){
+
+  bool failedToGetDeletedIndex = true;
+  if (failedToGetRecycledIndex && !_deletedHeapIndices.empty()){
     index = *_deletedHeapIndices.begin();
+    failedToGetDeletedIndex = false;
     allocateNewEntry = true;
     _deletedHeapIndices.erase(index);
   }
-  else {
+
+  if (failedToGetDeletedIndex && failedToGetRecycledIndex) {
     index = _nextIndex;
     allocateNewEntry = true;
     _nextIndex++;
