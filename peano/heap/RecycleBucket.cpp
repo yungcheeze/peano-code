@@ -42,7 +42,7 @@ bool peano::heap::RecycleBucket::empty() const {
 
 bool peano::heap::RecycleBucket::empty(const int& heap_size) {
   int index = get_bucket_index(heap_size);
-  bool result = index == -1 ? false : get_bucket(index).empty();
+  bool result = index == -1 ? true : get_bucket(index).empty();
   return result;
 }
 
