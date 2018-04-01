@@ -12,6 +12,7 @@ namespace peano {
     private:
       typedef std::list<int> recycleList;
       std::map<int, recycleList> _data;
+      std::map<int, recycleList> _dummy;
 
       /*
        * Mapping Function: maps heap_size to key in _data map.
@@ -21,7 +22,6 @@ namespace peano {
 
       /*
        * gets recycleList located at index.
-       * if list doesn't exist, returns recycleList stored at index -1;
        */
       recycleList& get_bucket(const int& index);
 
@@ -29,6 +29,11 @@ namespace peano {
        * inserts new recycleList at index.
        */
       void add_bucket(const int& index);
+
+      //TODO
+      //reference
+      //insertion lock
+      //iteration lock (prevent key insertions when iterating over container)
 
     public:
       typedef recycleList::size_type size_type;
@@ -40,8 +45,8 @@ namespace peano {
       bool empty() const;
       bool empty(const int& heap_size);
       size_type size() const;
-      void remove(const int& heap_size, const int& value); 
-      void push_back(const int& heap_size, const int& value);
+      void remove(const int& heap_size, const int& value);
+      void push_back(const int& heap_size, const int& value); 
       reference front(const int& heap_size);
       void pop_front(const int& heap_size);
 
