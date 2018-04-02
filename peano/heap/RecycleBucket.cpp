@@ -1,36 +1,100 @@
 #include "peano/heap/RecycleBucket.h"
+#include "tarch/multicore/Lock.h"
 
-peano::heap::RecycleBucket::RecycleBucket(): _data(), _dummy() {
+peano::heap::RecycleBucket::RecycleBucket(): _data(),
+                                             _dummy(),
+                                             _lookupCounter(),
+                                             _dataMapSemaphore()
+{
   _dummy[-1] = recycleList(); // index to lookup on failure
   _dummy[-1].push_back(-1); // value to return on failure
+  RefCounter tempCounter = RefCounter();
+  tempCounter.lockAcquired = false;
+  tempCounter.count = 0;
+  _lookupCounter.exchange(tempCounter);
+}
+
+void peano::heap::RecycleBucket::incrementRefCount() {
+  RefCounter expected, new_val;
+  expected = _lookupCounter.load();
+  expected.lockAcquired = false;
+  new_val = expected;
+  ++new_val.count;
+  while (!_lookupCounter.compare_exchange_weak(expected, new_val)) {
+    expected.lockAcquired = false;
+    new_val.count = expected.count + 1;
+  }
+}
+
+void peano::heap::RecycleBucket::decrementRefCount() {
+  RefCounter expected, new_val;
+  //TODO log warning if lockAcquired = true;
+  expected = _lookupCounter.load();
+  new_val = expected;
+  --new_val.count;
+  while (!_lookupCounter.compare_exchange_weak(expected, new_val)) {
+    new_val.count = expected.count - 1;
+    //should it matter if lock acquired or not?
+  }
+}
+
+void peano::heap::RecycleBucket::setLockAquiredFlag() {
+  RefCounter expected, new_val;
+  //TODO log warnings if expected lockAcquired = true;
+  expected = _lookupCounter.load();
+  expected.count = 0;
+  new_val = expected;
+  new_val.lockAcquired = true;
+  while (!_lookupCounter.compare_exchange_weak(expected, new_val)) {
+    expected.count = 0;
+    //stronger if set expected to true; lighter without
+  }
+}
+
+void peano::heap::RecycleBucket::unsetLockAquiredFlag() {
+  RefCounter expected, new_val;
+  //TODO log warnings if expected lockAcquired = false
+  expected = _lookupCounter.load();
+  expected.count = 0;
+  new_val = expected;
+  new_val.lockAcquired = false;
+  while (!_lookupCounter.compare_exchange_weak(expected, new_val)) {
+    expected.count = 0;
+    //stronger if set expected to true; lighter without
+    //TODO should not loopback; log if it does
+  }
 }
 
 int peano::heap::RecycleBucket::get_bucket_index(const int& heap_size) {
+  incrementRefCount();
   int index = _data.count(heap_size) ? heap_size : -1;
+  decrementRefCount();
   return index;
 }
 
 
 peano::heap::RecycleBucket::recycleList& peano::heap::RecycleBucket::get_bucket(const int &index) {
-  //c&s loop(increment ref count if flag is false)
+  incrementRefCount(); //will wait if lock is acquired
   recycleList& result = _data[index];
-  //decrement ref count
+  decrementRefCount();
   return result;
 }
 
 void peano::heap::RecycleBucket::add_bucket(const int &index){
-  //TODO lock this
-  //acquire iteration lock
-  //c&s loop (set flag to true if ref count is zero)
+  tarch::multicore::Lock lock(_dataMapSemaphore);
+  setLockAquiredFlag();
+
   if(_data.count(index) == 0) {
     _data[index] = recycleList();
   }
-  //set flag to false
+
+  unsetLockAquiredFlag();
+  lock.free();
 }
 
 bool peano::heap::RecycleBucket::empty() const {
   bool empty = true;
-  //TODO acquire iteration lock
+  //TODO deal with constness
   for (auto it = _data.begin(); it != _data.end(); ++it) {
     if (!(it->second).empty()) {
       empty = false;
@@ -48,7 +112,7 @@ bool peano::heap::RecycleBucket::empty(const int& heap_size) {
 
 peano::heap::RecycleBucket::size_type peano::heap::RecycleBucket::size() const {
   size_type size = 0;
-  //TODO acquire iteration lock
+  //TODO deal with constness
   for (auto it = _data.begin(); it != _data.end(); ++it) {
     size += (it->second).size();
   }

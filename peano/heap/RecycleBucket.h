@@ -4,6 +4,8 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <atomic>
+#include "tarch/multicore/BooleanSemaphore.h"
 
 namespace peano {
   namespace heap {
@@ -13,6 +15,22 @@ namespace peano {
       typedef std::list<int> recycleList;
       std::map<int, recycleList> _data;
       std::map<int, recycleList> _dummy;
+      struct RefCounter { bool lockAcquired; int count; };
+      std::atomic<RefCounter> _lookupCounter;
+      tarch::multicore::BooleanSemaphore _dataMapSemaphore;
+
+
+      void incrementRefCount();
+      void decrementRefCount();
+      void setLockAquiredFlag();
+      void unsetLockAquiredFlag();
+      //TODO nifty way decrementing RefCount after return (put in destructor)
+      // struct LockWait {
+      //   RefCounter _expected;
+      //   RefCounter _new_val;
+      //   LockWait();
+      //   ~LockWait();
+      // };
 
       /*
        * Mapping Function: maps heap_size to key in _data map.
@@ -30,10 +48,6 @@ namespace peano {
        */
       void add_bucket(const int& index);
 
-      //TODO
-      //reference
-      //insertion lock
-      //iteration lock (prevent key insertions when iterating over container)
 
     public:
       typedef recycleList::size_type size_type;
