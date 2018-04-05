@@ -1,12 +1,44 @@
 #include "peano/heap/LockFreeStack.h"
 
 LockFreeStack::LockFreeStack() {
+  init();
+}
+
+LockFreeStack::LockFreeStack(const LockFreeStack& other) {
+  free();
+  init();
+  //TODO facilitate proper copying
+}
+
+LockFreeStack& LockFreeStack::operator=(const LockFreeStack &rhs)
+{
+  // Check for self-assignment!
+  if (this == &rhs)
+    return *this;
+
+  free();
+  init();
+  //TODO facilitate proper copying
+  return *this;
+}
+LockFreeStack::~LockFreeStack() {
+  free();
+}
+
+void LockFreeStack::init() {
   tail = new Node();
   head.a_top.exchange(AbaPtr {tail, 0});
 }
 
-LockFreeStack::~LockFreeStack() {
-  delete tail;
+void LockFreeStack::free() {
+  Node* top = head.a_top.load().ptr;
+  Node* next = top->next;
+  delete top;
+  while(next != nullptr){
+    top = next;
+    next = top->next;
+    delete top;
+  }
 }
 
 void LockFreeStack::push(int key) {

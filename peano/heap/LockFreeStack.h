@@ -21,13 +21,20 @@ public:
 
 class LockFreeStack
 {
+private:
+  void init();
+  void free();
+  
 public:
   HeadNode head;
   Node *tail;
   typedef unsigned size_type;
 
   LockFreeStack();
+  LockFreeStack(const LockFreeStack& other);
+  LockFreeStack& operator=(const LockFreeStack& rhs);
   ~LockFreeStack();
+
   void push(int key);
   int pop();
   size_type size();
