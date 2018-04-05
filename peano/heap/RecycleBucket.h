@@ -1,18 +1,26 @@
 #ifndef PEANO_HEAP_RECYCLEBUCKET_H
 #define PEANO_HEAP_RECYCLEBUCKET_H
 
+#if defined(SharedTBB) || defined(SharedTBBInvade)
+#include "tbb/concurrent_queue.h"
+#else
 #include <list>
-#include <vector>
+#endif
 #include <map>
 #include <atomic>
 #include "tarch/multicore/BooleanSemaphore.h"
+#include "peano/heap/LockFreeStack.h"
 
 namespace peano {
   namespace heap {
     class RecycleBucket {
 
     private:
-      typedef std::list<int> recycleList;
+#if defined(SharedTBB) || defined(SharedTBBInvade)
+      typedef std::concurrent_queue<int> recycleList;
+#else
+      typedef LockFreeStack recycleList;
+#endif
       std::map<int, recycleList> _data;
       std::map<int, recycleList> _dummy;
       struct RefCounter { bool lockAcquired; int count; };
@@ -51,18 +59,15 @@ namespace peano {
 
     public:
       typedef recycleList::size_type size_type;
-      typedef recycleList::reference reference;
-      typedef recycleList::value_type value_type;
 
       RecycleBucket();
+      
 
       bool empty();
       bool empty(const int& heap_size);
-      void remove(const int& heap_size, const int& value);
-      void push_back(const int& heap_size, const int& value); 
-      reference front(const int& heap_size);
-      void pop_front(const int& heap_size);
       size_type size();
+      void push(const int& heap_size, const int& value); 
+      void pop(const int& heap_size, int& destination);
 
     };
 
