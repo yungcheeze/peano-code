@@ -156,8 +156,9 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
   assertion2(initialCapacity==0 || initialCapacity>=numberOfEntries, numberOfEntries, initialCapacity);
 
   tarch::multicore::Lock lock(_recycleAndDeleteSemaphore);
-  _deletedHeapIndices.erase(wantedIndex);
-  _recycledHeapIndices.remove(numberOfEntries, wantedIndex);
+  // potentially redundant lines
+  // _deletedHeapIndices.erase(wantedIndex);
+  // _recycledHeapIndices.remove(numberOfEntries, wantedIndex);
   
   if (_nextIndex<=wantedIndex){
     _nextIndex = wantedIndex+1;
