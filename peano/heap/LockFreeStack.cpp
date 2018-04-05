@@ -1,4 +1,5 @@
 #include "peano/heap/LockFreeStack.h"
+#include "tarch/multicore/Lock.h"
 
 LockFreeStack::LockFreeStack() {
   init();
@@ -55,6 +56,7 @@ void LockFreeStack::push(int key) {
 
 
 int LockFreeStack::pop() {
+  tarch::multicore::Lock lock(_deleteSemaphore);
   AbaPtr curr_top = head.a_top.load();
   if(curr_top.ptr == tail) return -1;
   AbaPtr new_top = curr_top;
@@ -67,6 +69,7 @@ int LockFreeStack::pop() {
   }
   int result = curr_top.ptr->_data;
   delete curr_top.ptr;
+  lock.free();
   return result;
 }
 

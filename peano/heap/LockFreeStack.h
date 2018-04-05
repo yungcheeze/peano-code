@@ -1,4 +1,5 @@
 #include <atomic>
+#include "tarch/multicore/BooleanSemaphore.h"
 
 class Node
 {
@@ -28,6 +29,8 @@ private:
 public:
   HeadNode head;
   Node *tail;
+  tarch::multicore::BooleanSemaphore _deleteSemaphore;
+
   typedef unsigned size_type;
 
   LockFreeStack();
