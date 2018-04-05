@@ -37,3 +37,17 @@ int LockFreeStack::pop() {
   delete curr_top.ptr;
   return result;
 }
+
+LockFreeStack::size_type LockFreeStack::size() {
+  if(head.a_top.load().ptr->next == tail)
+    return 0;
+  else
+    return 1;
+}
+
+bool LockFreeStack::empty() {
+  if(head.a_top.load().ptr->next == tail)
+    return true;
+  else
+    return false;
+}

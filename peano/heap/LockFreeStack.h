@@ -24,10 +24,13 @@ class LockFreeStack
 public:
   HeadNode head;
   Node *tail;
+  typedef unsigned size_type;
 
   LockFreeStack();
   ~LockFreeStack();
   void push(int key);
   int pop();
+  size_type size();
+  bool empty();
 
 };
