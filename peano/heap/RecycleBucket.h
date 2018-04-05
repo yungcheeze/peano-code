@@ -4,12 +4,11 @@
 #if defined(SharedTBB) || defined(SharedTBBInvade)
 #include "tbb/concurrent_queue.h"
 #else
-#include <list>
+#include "peano/heap/LockFreeStack.h"
 #endif
 #include <map>
 #include <atomic>
 #include "tarch/multicore/BooleanSemaphore.h"
-#include "peano/heap/LockFreeStack.h"
 
 namespace peano {
   namespace heap {

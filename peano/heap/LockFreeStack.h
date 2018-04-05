@@ -1,3 +1,6 @@
+#ifndef LOCKFREESTACK_H
+#define LOCKFREESTACK_H
+
 #include <atomic>
 #include "tarch/multicore/BooleanSemaphore.h"
 
@@ -44,3 +47,5 @@ public:
   bool empty();
 
 };
+
+#endif /* LOCKFREESTACK_H */
