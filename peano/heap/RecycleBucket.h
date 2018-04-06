@@ -1,11 +1,7 @@
 #ifndef PEANO_HEAP_RECYCLEBUCKET_H
 #define PEANO_HEAP_RECYCLEBUCKET_H
 
-#if defined(SharedTBB) || defined(SharedTBBInvade)
-#include "peano/heap/TbbQueue.h"
-#else
 #include "peano/heap/LockFreeStack.h"
-#endif
 #include <map>
 #include <atomic>
 #include "tarch/multicore/BooleanSemaphore.h"
@@ -15,11 +11,8 @@ namespace peano {
     class RecycleBucket {
 
     private:
-#if defined(SharedTBB) || defined(SharedTBBInvade)
-      typedef TbbQueue recycleList;
-#else
       typedef LockFreeStack recycleList;
-#endif
+
       std::map<int, recycleList> _data;
       std::map<int, recycleList> _dummy;
       struct RefCounter { bool lockAcquired; int count; };
