@@ -14,7 +14,6 @@ namespace peano {
       typedef LockFreeStack recycleList;
 
       std::map<int, recycleList> _data;
-      std::map<int, recycleList> _dummy;
       struct RefCounter { bool lockAcquired; int count; };
       std::atomic<RefCounter> _lookupCounter;
       tarch::multicore::BooleanSemaphore _dataMapSemaphore;

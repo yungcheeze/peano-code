@@ -2,12 +2,9 @@
 #include "tarch/multicore/Lock.h"
 
 peano::heap::RecycleBucket::RecycleBucket(): _data(),
-                                             _dummy(),
                                              _lookupCounter(),
                                              _dataMapSemaphore()
 {
-  _dummy.emplace(-1, recycleList());
-  _dummy[-1].push(-1); // value to return on failure
   RefCounter tempCounter = RefCounter();
   tempCounter.lockAcquired = false;
   tempCounter.count = 0;
