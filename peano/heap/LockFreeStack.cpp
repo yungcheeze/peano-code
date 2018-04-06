@@ -28,11 +28,11 @@ LockFreeStack::~LockFreeStack() {
 
 void LockFreeStack::init() {
   tail = new Node();
-  head.a_top.exchange(AbaPtr {tail, 0});
+  head.a_top.exchange(tail);
 }
 
 void LockFreeStack::free() {
-  Node* top = head.a_top.load().ptr;
+  Node* top = head.a_top.load();
   Node* next = top->next;
   delete top;
   while(next != nullptr){
@@ -43,45 +43,40 @@ void LockFreeStack::free() {
 }
 
 void LockFreeStack::push(int key) {
-  AbaPtr curr_top = head.a_top.load();
-  AbaPtr new_top = curr_top;
-  new_top.ptr = new Node(key);
-  new_top.ptr->next = curr_top.ptr;
-  new_top.aba += 1;
+  Node* curr_top = head.a_top.load();
+  Node* new_top = new Node(key);
+  new_top->next = curr_top;
   while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
-    new_top.ptr->next = curr_top.ptr;
-    new_top.aba = curr_top.aba + 1;
+    new_top->next = curr_top;
   }
 }
 
 
 int LockFreeStack::pop() {
   tarch::multicore::Lock lock(_deleteSemaphore);
-  AbaPtr curr_top = head.a_top.load();
-  if(curr_top.ptr == tail) return -1;
-  AbaPtr new_top = curr_top;
-  new_top.ptr = curr_top.ptr->next;
-  new_top.aba += 1;
+  Node* curr_top = head.a_top.load();
+  if(curr_top == tail) return -1;
+  Node* new_top = curr_top;
+  new_top = curr_top->next;
   while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
-    if(curr_top.ptr == tail) return -1;
-    new_top.ptr = curr_top.ptr->next;
-    new_top.aba = curr_top.aba + 1;
+    if(curr_top == tail) return -1;
+    new_top = curr_top->next;
   }
-  int result = curr_top.ptr->_data;
-  delete curr_top.ptr;
+  int result = curr_top->_data;
+  delete curr_top;
   lock.free();
   return result;
 }
 
 LockFreeStack::size_type LockFreeStack::size() const {
-  if(head.a_top.load().ptr->next == tail)
+  if(head.a_top.load()->next == tail)
     return 0;
   else
     return 1;
 }
 
 bool LockFreeStack::empty() const {
-  if(head.a_top.load().ptr->next == tail)
+  if(head.a_top.load()->next == tail)
     return true;
   else
     return false;

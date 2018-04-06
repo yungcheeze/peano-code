@@ -14,12 +14,11 @@ public:
   Node(int data): _data(data), mark(false) {}
 };
 
-struct AbaPtr { Node* ptr; unsigned short aba; };
 
 class HeadNode {
 public:
   int _data;
-  std::atomic<AbaPtr> a_top;
+  std::atomic<Node*> a_top;
   HeadNode() : _data(0) {}
 };
 
