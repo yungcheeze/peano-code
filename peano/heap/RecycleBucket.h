@@ -2,7 +2,7 @@
 #define PEANO_HEAP_RECYCLEBUCKET_H
 
 #if defined(SharedTBB) || defined(SharedTBBInvade)
-#include "tbb/concurrent_queue.h"
+#include "peano/heap/TbbQueue.h"
 #else
 #include "peano/heap/LockFreeStack.h"
 #endif
@@ -16,7 +16,7 @@ namespace peano {
 
     private:
 #if defined(SharedTBB) || defined(SharedTBBInvade)
-      typedef tbb::concurrent_queue<int> recycleList;
+      typedef TbbQueue recycleList;
 #else
       typedef LockFreeStack recycleList;
 #endif

@@ -132,11 +132,6 @@ void peano::heap::RecycleBucket::push(const int &heap_size, const int &value) {
 void peano::heap::RecycleBucket::pop(const int &heap_size, int& destination) {
   int index = get_bucket_index(heap_size);
   if (index != -1){
-#if defined(SharedTBB) || defined(SharedTBBInvade)
-   bool successful =  get_bucket(index).try_pop(destination);
-   if(!successful) destination = -1;
-#else
     destination = get_bucket(index).pop();
-#endif
   }
 }
