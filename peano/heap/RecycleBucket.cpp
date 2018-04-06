@@ -82,7 +82,7 @@ void peano::heap::RecycleBucket::add_bucket(const int &index){
   setLockAquiredFlag();
 
   if(_data.count(index) == 0) {
-    _data.emplace(index, recycleList());
+    _data[index] =  recycleList();
   }
 
   unsetLockAquiredFlag();

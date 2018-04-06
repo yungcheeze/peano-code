@@ -32,14 +32,11 @@ void LockFreeStack::init() {
 }
 
 void LockFreeStack::free() {
-  Node* top = head.a_top.load();
-  Node* next = top->next;
-  delete top;
-  while(next != nullptr){
-    top = next;
-    next = top->next;
-    delete top;
+  while (!empty()) {
+    int out = pop();
   }
+  head.a_top.exchange(0);
+  delete tail;
 }
 
 void LockFreeStack::push(int key) {
@@ -69,14 +66,14 @@ int LockFreeStack::pop() {
 }
 
 LockFreeStack::size_type LockFreeStack::size() const {
-  if(head.a_top.load()->next == tail)
+  if(head.a_top.load() == tail)
     return 0;
   else
     return 1;
 }
 
 bool LockFreeStack::empty() const {
-  if(head.a_top.load()->next == tail)
+  if(head.a_top.load() == tail)
     return true;
   else
     return false;
