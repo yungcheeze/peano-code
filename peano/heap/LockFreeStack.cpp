@@ -5,6 +5,23 @@ LockFreeStack::LockFreeStack() {
   init();
 }
 
+LockFreeStack::LockFreeStack(const LockFreeStack& other) {
+  free();
+  init();
+  //TODO facilitate proper copying
+}
+
+LockFreeStack& LockFreeStack::operator=(const LockFreeStack &rhs)
+{
+  // Check for self-assignment!
+  if (this == &rhs)
+    return *this;
+
+  free();
+  init();
+  //TODO facilitate proper copying
+  return *this;
+}
 LockFreeStack::~LockFreeStack() {
   free();
 }
