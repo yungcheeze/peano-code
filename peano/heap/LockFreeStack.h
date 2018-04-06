@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include "tarch/multicore/BooleanSemaphore.h"
+#include "tbb/concurrent_queue.h"
 
 class Node
 {
@@ -37,8 +38,8 @@ public:
   typedef unsigned size_type;
 
   LockFreeStack();
-  LockFreeStack(const LockFreeStack& other);
-  LockFreeStack& operator=(const LockFreeStack& rhs);
+  LockFreeStack(const LockFreeStack& other) = delete;
+  LockFreeStack& operator=(const LockFreeStack& rhs) = delete;
   ~LockFreeStack();
 
   void push(int key);
