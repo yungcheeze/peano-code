@@ -242,7 +242,7 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
 
   bool failedToGetDeletedIndex = true;
   if (failedToGetRecycledIndex && !_deletedHeapIndices.empty(0)){
-    failedToGetDeletedIndex = _deletedHeapIndices.pop(0, index);
+    _deletedHeapIndices.pop(0, index);
     failedToGetDeletedIndex = index == -1;
     allocateNewEntry = true;
   }
