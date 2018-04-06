@@ -235,24 +235,26 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
   
   bool failedToGetRecycledIndex = true;
   if ( !_recycledHeapIndices.empty(numberOfEntries) && allocation!=Allocation::DoNotUseAnyRecycledEntry ) {
-    index = _recycledHeapIndices.front(numberOfEntries);
+    _recycledHeapIndices.pop(numberOfEntries, index);
     failedToGetRecycledIndex = index == -1;
     allocateNewEntry = failedToGetRecycledIndex;
-    _recycledHeapIndices.pop_front(numberOfEntries);
   }
 
   bool failedToGetDeletedIndex = true;
   if (failedToGetRecycledIndex && !_deletedHeapIndices.empty()){
-    index = *_deletedHeapIndices.begin();
-    failedToGetDeletedIndex = false;
+#if defined(SharedTBB) || defined(SharedTBBInvade)
+    failedToGetDeletedIndex = _deletedHeapIndices.try_pop(index);
+#else
+    index = _deletedHeapIndices.pop()
+    failedToGetDeletedIndex = index == -1;
+#endif
     allocateNewEntry = true;
-    _deletedHeapIndices.erase(index);
   }
 
   if (failedToGetDeletedIndex && failedToGetRecycledIndex) {
     index = _nextIndex;
-    allocateNewEntry = true;
     _nextIndex++;
+    allocateNewEntry = true;
   }
 
   if (allocateNewEntry) {
@@ -378,14 +380,13 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
 
   if (recycle) {
     getData(index).clear();
-    _recycledHeapIndices.push_back(getData(index).capacity(), index);
+    _recycledHeapIndices.push(getData(index).capacity(), index);
   }
   else {
     getData(index).clear();
     delete &(getData(index));
     _heapData.erase(index);
-
-    _deletedHeapIndices.insert(index);
+    _deletedHeapIndices.push(index);
   }
 
   _numberOfHeapFrees++;

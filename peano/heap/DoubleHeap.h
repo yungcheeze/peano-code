@@ -7,8 +7,10 @@
 #if defined(SharedTBB) || defined(SharedTBBInvade)
 #include <tbb/cache_aligned_allocator.h>
 #include <tbb/concurrent_hash_map.h>
+#include "tbb/concurrent_queue.h"
 #else
 #include <map>
+#include "peano/heap/LockFreeStack.h"
 #endif
 
 #include <set>
@@ -159,7 +161,7 @@ class peano::heap::DoubleHeap: public tarch::services::Service, peano::heap::Abs
 
     HeapContainer    _heapData;
 
-    RecycledAndDeletedEntriesContainer   _deletedHeapIndices;
+    LockFreeStack   _deletedHeapIndices;
 
     RecycleBucket   _recycledHeapIndices;
 
