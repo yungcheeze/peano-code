@@ -73,14 +73,14 @@ int LockFreeStack::pop() {
   return result;
 }
 
-LockFreeStack::size_type LockFreeStack::size() {
+LockFreeStack::size_type LockFreeStack::size() const {
   if(head.a_top.load().ptr->next == tail)
     return 0;
   else
     return 1;
 }
 
-bool LockFreeStack::empty() {
+bool LockFreeStack::empty() const {
   if(head.a_top.load().ptr->next == tail)
     return true;
   else

@@ -55,9 +55,9 @@ namespace peano {
       RecycleBucket();
       
 
-      bool empty();
+      bool empty() const;
       bool empty(const int& heap_size);
-      size_type size();
+      size_type size() const;
       void push(const int& heap_size, const int& value); 
       void pop(const int& heap_size, int& destination);
 

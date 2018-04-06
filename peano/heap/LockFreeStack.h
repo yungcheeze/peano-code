@@ -43,8 +43,8 @@ public:
 
   void push(int key);
   int pop();
-  size_type size();
-  bool empty();
+  size_type size() const;
+  bool empty() const;
 
 };
 

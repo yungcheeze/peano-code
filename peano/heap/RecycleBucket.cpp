@@ -92,17 +92,15 @@ void peano::heap::RecycleBucket::add_bucket(const int &index){
   lock.free();
 }
 
-bool peano::heap::RecycleBucket::empty() {
+bool peano::heap::RecycleBucket::empty() const {
   bool empty = true;
-  //TODO deal with constness
-  tarch::multicore::Lock lock(_dataMapSemaphore);
+  //TODO don't use iterator
   for (auto it = _data.begin(); it != _data.end(); ++it) {
     if (!(it->second).empty()) {
       empty = false;
       break;
     }
   }
-  lock.free();
   return empty;
 }
 
@@ -112,14 +110,12 @@ bool peano::heap::RecycleBucket::empty(const int& heap_size) {
   return result;
 }
 
-peano::heap::RecycleBucket::size_type peano::heap::RecycleBucket::size() {
+peano::heap::RecycleBucket::size_type peano::heap::RecycleBucket::size() const{
   size_type size = 0;
-  //TODO deal with constness
-  tarch::multicore::Lock lock(_dataMapSemaphore);
+  //TODO don't use iterator
   for (auto it = _data.begin(); it != _data.end(); ++it) {
     size += (it->second).size();
   }
-  lock.free();
   return size;
 }
 
