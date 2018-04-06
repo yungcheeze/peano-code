@@ -6,7 +6,7 @@ peano::heap::RecycleBucket::RecycleBucket(): _data(),
                                              _lookupCounter(),
                                              _dataMapSemaphore()
 {
-  _dummy[-1] = recycleList(); // index to lookup on failure
+  _dummy.emplace(-1, recycleList());
   _dummy[-1].push(-1); // value to return on failure
   RefCounter tempCounter = RefCounter();
   tempCounter.lockAcquired = false;

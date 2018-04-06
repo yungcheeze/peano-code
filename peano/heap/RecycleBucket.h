@@ -16,7 +16,7 @@ namespace peano {
 
     private:
 #if defined(SharedTBB) || defined(SharedTBBInvade)
-      typedef std::concurrent_queue<int> recycleList;
+      typedef tbb::concurrent_queue<int> recycleList;
 #else
       typedef LockFreeStack recycleList;
 #endif
