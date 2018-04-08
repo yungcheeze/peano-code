@@ -284,6 +284,7 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
 
   _numberOfHeapAllocations += 1;
 
+  //TODO update needs to be atomic to be correct
   if(static_cast<int>(_heapData.size()) > _maximumNumberOfHeapEntries) {
     _maximumNumberOfHeapEntries = static_cast<int>(_heapData.size());
   }

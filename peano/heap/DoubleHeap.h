@@ -11,7 +11,7 @@
 #include <map>
 #endif
 
-#include <set>
+#include <atomic>
 
 
 #include "peano/heap/Heap.h"
@@ -163,7 +163,7 @@ class peano::heap::DoubleHeap: public tarch::services::Service, peano::heap::Abs
 
     RecycledAndDeletedEntriesContainer   _recycledHeapIndices;
 
-    int _nextIndex;
+    std::atomic<int> _nextIndex;
 
     #ifdef Parallel
     int                                    _neighbourDataExchangerMetaDataTag;
@@ -174,11 +174,11 @@ class peano::heap::DoubleHeap: public tarch::services::Service, peano::heap::Abs
     std::map<int, NeighbourDataExchanger>  _neighbourDataExchanger;
     #endif
 
-    int _maximumNumberOfHeapEntries;
+    std::atomic<int> _maximumNumberOfHeapEntries;
 
-    int _numberOfHeapAllocations;
+    std::atomic<int> _numberOfHeapAllocations;
 
-    int _numberOfHeapFrees;
+    std::atomic<int> _numberOfHeapFrees;
 
     std::string _name;
 
