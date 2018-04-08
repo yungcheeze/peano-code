@@ -33,7 +33,7 @@ void LockFreeStack::init() {
 
 void LockFreeStack::free() {
   while (!empty()) {
-    int out = pop();
+    pop();
   }
   head.a_top.exchange(0);
   delete tail;
