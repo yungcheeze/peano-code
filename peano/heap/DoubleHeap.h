@@ -30,7 +30,7 @@ namespace peano {
       class MasterWorkerExchanger,
       class JoinForkExchanger,
       class NeighbourDataExchanger,
-      class VectorContainer = ThreadSafeHeap
+      class VectorContainer = std::vector<double>
     >
     class DoubleHeap;
 
