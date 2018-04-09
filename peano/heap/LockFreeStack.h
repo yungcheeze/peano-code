@@ -36,6 +36,9 @@ private:
   void incrementPushCount();
   void decrementPushCount();
 
+  void node_push(HeadNode &hn, Node *new_top);
+  Node* node_pop(HeadNode &hn);
+
 public:
   HeadNode head;
   HeadNode rhead;
