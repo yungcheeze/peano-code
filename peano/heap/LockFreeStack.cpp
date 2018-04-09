@@ -108,11 +108,17 @@ int LockFreeStack::pop() {
   tarch::multicore::Lock lock(_deleteSemaphore);
   incrementPopCount();
   Node* curr_top = head.a_top.load();
-  if(curr_top == tail) return -1;
+  if(curr_top == tail) {
+    decrementPopCount();
+    return -1;
+  }
   Node* new_top = curr_top;
   new_top = curr_top->next;
   while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
-    if(curr_top == tail) return -1;
+    if(curr_top == tail) {
+      decrementPopCount();
+      return -1;
+    }
     new_top = curr_top->next;
   }
   int result = curr_top->_data;
