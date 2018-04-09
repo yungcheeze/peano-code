@@ -52,6 +52,18 @@ void LockFreeStack::decrementPushCount(){
 #endif
 }
 
+void LockFreeStack::init() {
+  tail = new Node();
+  head.a_top.exchange(tail);
+}
+
+void LockFreeStack::free() {
+  while (!empty()) {
+    pop();
+  }
+  head.a_top.exchange(0);
+  delete tail;
+}
 
 LockFreeStack::LockFreeStack(): _refcount(RefCounter {0, 0}) {
   init();
@@ -76,19 +88,6 @@ LockFreeStack& LockFreeStack::operator=(const LockFreeStack &rhs)
 }
 LockFreeStack::~LockFreeStack() {
   free();
-}
-
-void LockFreeStack::init() {
-  tail = new Node();
-  head.a_top.exchange(tail);
-}
-
-void LockFreeStack::free() {
-  while (!empty()) {
-    pop();
-  }
-  head.a_top.exchange(0);
-  delete tail;
 }
 
 void LockFreeStack::push(int key) {
