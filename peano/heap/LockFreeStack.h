@@ -2,7 +2,6 @@
 #define LOCKFREESTACK_H
 
 #include <atomic>
-#include "tarch/multicore/BooleanSemaphore.h"
 
 class Node
 {
@@ -43,7 +42,6 @@ public:
   HeadNode head;
   HeadNode rhead;
   Node *tail;
-  tarch::multicore::BooleanSemaphore _deleteSemaphore;
 
   typedef unsigned size_type;
 
