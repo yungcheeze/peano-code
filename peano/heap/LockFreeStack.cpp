@@ -55,6 +55,7 @@ void LockFreeStack::decrementPushCount(){
 void LockFreeStack::init() {
   tail = new Node();
   head.a_top.exchange(tail);
+  rhead.a_top.exchange(tail);
 }
 
 void LockFreeStack::free() {
@@ -62,6 +63,7 @@ void LockFreeStack::free() {
     pop();
   }
   head.a_top.exchange(0);
+  rhead.a_top.exchange(0);
   delete tail;
 }
 

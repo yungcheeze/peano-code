@@ -38,6 +38,7 @@ private:
 
 public:
   HeadNode head;
+  HeadNode rhead;
   Node *tail;
   tarch::multicore::BooleanSemaphore _deleteSemaphore;
 
