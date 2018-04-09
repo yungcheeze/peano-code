@@ -10,6 +10,8 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <atomic>
+#include "peano/heap/RecycleBucket.h"
 
 #include "peano/heap/AbstractHeap.h"
 #include "peano/heap/SendReceiveTask.h"
@@ -361,7 +363,7 @@ class peano::heap::Heap: public tarch::services::Service, peano::heap::AbstractH
     typedef std::map<int, std::vector<Data>*>  HeapContainer;
     #endif
 
-    typedef std::set<int>                      RecycledAndDeletedEntriesContainer;
+    typedef RecycleBucket                      RecycledAndDeletedEntriesContainer;
 
     /**
      * Map that holds all data that is stored on the heap
@@ -398,7 +400,7 @@ class peano::heap::Heap: public tarch::services::Service, peano::heap::AbstractH
      * payed by now to fragmentation of the index space by
      * deleting data.
      */
-    int _nextIndex;
+  std::atomic<int> _nextIndex;
 
     #ifdef Parallel
     /**
@@ -418,15 +420,15 @@ class peano::heap::Heap: public tarch::services::Service, peano::heap::AbstractH
      * Stores the maximum number of heap objects that was stored
      * in this object at any time.
      */
-    int _maximumNumberOfHeapEntries;
+  std::atomic<int> _maximumNumberOfHeapEntries;
 
     /**
      * Stores the number of heap objects that have been allocated within
      * this object during the program's runtime.
      */
-    int _numberOfHeapAllocations;
+  std::atomic<int> _numberOfHeapAllocations;
 
-    int _numberOfHeapFrees;
+  std::atomic<int> _numberOfHeapFrees;
 
     /**
      * Name for this heap object. Used for plotting statistics.

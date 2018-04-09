@@ -12,6 +12,7 @@
 #endif
 
 #include <atomic>
+#include <vector>
 
 
 #include "peano/heap/Heap.h"
