@@ -27,7 +27,15 @@ class LockFreeStack
 private:
   void init();
   void free();
+
+  struct RefCounter { unsigned pushCount; int popCount; };
+  std::atomic<RefCounter> _refcount;
   
+  void incrementPopCount();
+  void decrementPopCount();
+  void incrementPushCount();
+  void decrementPushCount();
+
 public:
   HeadNode head;
   Node *tail;
