@@ -87,7 +87,6 @@ void LockFreeStack::free() {
   while (!empty()) {
     pop();
   }
-  head.a_top.exchange(0);
   delete tail;
 }
 
