@@ -1,11 +1,62 @@
 #include "peano/heap/LockFreeStack.h"
 #include "tarch/multicore/Lock.h"
 
-LockFreeStack::LockFreeStack() {
+void LockFreeStack::incrementPopCount(){
+#ifndef DCAS
+  RefCounter expected, new_val;
+  expected = _refcount.load();
+  expected.pushCount = 0;
+  new_val = expected;
+  ++new_val.popCount;
+  while (!_refcount.compare_exchange_weak(expected, new_val)) {
+    expected.pushCount = 0;
+    new_val.popCount = expected.popCount + 1;
+  }
+#endif
+}
+
+void LockFreeStack::decrementPopCount(){
+#ifndef DCAS
+  RefCounter expected, new_val;
+  expected = _refcount.load();
+  new_val = expected;
+  --new_val.popCount;
+  while (!_refcount.compare_exchange_weak(expected, new_val)) {
+    new_val.popCount = expected.popCount - 1;
+  }
+#endif
+}
+
+void LockFreeStack::incrementPushCount(){
+#ifndef DCAS
+  RefCounter expected, new_val;
+  expected = _refcount.load();
+  expected.popCount = 0;
+  new_val = expected;
+  ++new_val.pushCount;
+  while (!_refcount.compare_exchange_weak(expected, new_val)) {
+    expected.popCount = 0;
+    new_val.pushCount = expected.pushCount + 1;
+  }
+#endif
+}
+void LockFreeStack::decrementPushCount(){
+#ifndef DCAS
+  RefCounter expected, new_val;
+  expected = _refcount.load();
+  new_val = expected;
+  --new_val.pushCount;
+  while (!_refcount.compare_exchange_weak(expected, new_val)) {
+    new_val.pushCount = expected.pushCount - 1;
+  }
+#endif
+}
+
+LockFreeStack::LockFreeStack(): _refcount(RefCounter {0, 0}) {
   init();
 }
 
-LockFreeStack::LockFreeStack(const LockFreeStack& other) {
+LockFreeStack::LockFreeStack(const LockFreeStack& other): _refcount(RefCounter {0, 0}) {
   free();
   init();
   //TODO facilitate proper copying
@@ -17,6 +68,7 @@ LockFreeStack& LockFreeStack::operator=(const LockFreeStack &rhs)
   if (this == &rhs)
     return *this;
 
+  _refcount.exchange(rhs._refcount);
   free();
   init();
   //TODO facilitate proper copying
