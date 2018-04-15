@@ -81,52 +81,63 @@ LockFreeStack::~LockFreeStack() {
 void LockFreeStack::init() {
   tail = new Node();
   head.a_top.exchange(tail);
+  rhead.a_top.exchange(tail);
 }
 
 void LockFreeStack::free() {
   while (!empty()) {
-    pop();
+    node_pop(head);
+  }
+  while (rhead.a_top.load() != tail) {
+    node_pop(rhead);
   }
   delete tail;
 }
 
-void LockFreeStack::push(int key) {
-  incrementPushCount();
-  Node* curr_top = head.a_top.load();
-  Node* new_top = new Node(key);
+void LockFreeStack::node_push(HeadNode &hn, Node *new_top) {
+  Node *curr_top = hn.a_top.load();
   new_top->next = curr_top;
-  while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
+  while(!hn.a_top.compare_exchange_weak(curr_top, new_top)){
     new_top->next = curr_top;
   }
+}
+
+Node* LockFreeStack::node_pop(HeadNode &hn) {
+  Node *curr_top = hn.a_top.load();
+  if(curr_top == tail) return 0;
+  Node *new_top = curr_top;
+  new_top = curr_top->next;
+  while(!hn.a_top.compare_exchange_weak(curr_top, new_top)){
+    if(curr_top == tail) return 0;
+    new_top = curr_top->next;
+  }
+  return curr_top;
+}
+
+void LockFreeStack::push(int key) {
+  incrementPushCount();
+  Node* new_top = node_pop(rhead);
+  if (new_top == 0)
+    new_top = new Node(key);
+  else
+    new_top->_data = key;
+  node_push(head, new_top);
   decrementPushCount();
 }
 
 
 int LockFreeStack::pop() {
+  int result;
   incrementPopCount();
-  Node* curr_top = head.a_top.load();
-  if(curr_top == tail) {decrementPopCount(); return -1;}
-  Node* new_top = curr_top;
 
-  tarch::multicore::Lock lock(_deleteSemaphore);
-  if(curr_top != nullptr)
-    new_top = curr_top->next;
-  lock.free();
-
-  while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
-    if(curr_top == tail) {decrementPopCount(); return -1;}
-
-    lock.lock();
-    if(curr_top != nullptr)
-      new_top = curr_top->next;
-    lock.free();
-
+  Node* old_top = node_pop(head);
+  if (old_top != 0) {
+    result = old_top->_data;
+    old_top->_data = -1;
+    node_push(rhead, old_top);
+  } else {
+    result = -1;
   }
-  int result = curr_top->_data;
-
-  lock.lock();
-  delete curr_top;
-  lock.free();
 
   decrementPopCount();
   return result;
