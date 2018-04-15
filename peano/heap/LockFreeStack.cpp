@@ -92,28 +92,44 @@ void LockFreeStack::free() {
 }
 
 void LockFreeStack::push(int key) {
+  incrementPushCount();
   Node* curr_top = head.a_top.load();
   Node* new_top = new Node(key);
   new_top->next = curr_top;
   while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
     new_top->next = curr_top;
   }
+  decrementPushCount();
 }
 
 
 int LockFreeStack::pop() {
-  tarch::multicore::Lock lock(_deleteSemaphore);
+  incrementPopCount();
   Node* curr_top = head.a_top.load();
-  if(curr_top == tail) return -1;
+  if(curr_top == tail) {decrementPopCount(); return -1;}
   Node* new_top = curr_top;
-  new_top = curr_top->next;
-  while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
-    if(curr_top == tail) return -1;
+
+  tarch::multicore::Lock lock(_deleteSemaphore);
+  if(curr_top != nullptr)
     new_top = curr_top->next;
+  lock.free();
+
+  while(!head.a_top.compare_exchange_weak(curr_top, new_top)){
+    if(curr_top == tail) {decrementPopCount(); return -1;}
+
+    lock.lock();
+    if(curr_top != nullptr)
+      new_top = curr_top->next;
+    lock.free();
+
   }
   int result = curr_top->_data;
+
+  lock.lock();
   delete curr_top;
   lock.free();
+
+  decrementPopCount();
   return result;
 }
 
