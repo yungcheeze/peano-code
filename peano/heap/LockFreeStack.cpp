@@ -174,15 +174,29 @@ int LockFreeStack::pop() {
 }
 
 LockFreeStack::size_type LockFreeStack::size() const {
+#ifdef DCAS
+  if(head.a_top.load().ptr == tail)
+    return 0;
+  else
+    return 1;
+#else
   if(head.a_top.load() == tail)
     return 0;
   else
     return 1;
+#endif
 }
 
 bool LockFreeStack::empty() const {
+#ifdef DCAS
+  if(head.a_top.load().ptr == tail)
+    return true;
+  else
+    return false;
+#else
   if(head.a_top.load() == tail)
     return true;
   else
     return false;
+#endif
 }
