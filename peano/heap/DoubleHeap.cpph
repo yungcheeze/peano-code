@@ -220,19 +220,19 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
   assertion2(numberOfEntries >= 0, numberOfEntries, initialCapacity);
   assertion2(initialCapacity==0 || initialCapacity>=numberOfEntries, numberOfEntries, initialCapacity);
 
-  // tarch::multicore::Lock lock(_recycleAndDeleteSemaphore);
+  tarch::multicore::Lock lock(_recycleAndDeleteSemaphore);
 
   int  index;
   bool allocateNewEntry;
   //TODO ensure this is semantically correct
   if ( _recycledHeapIndices.empty(numberOfEntries) && allocation==Allocation::UseOnlyRecycledEntries) {
     logTraceOutWith1Argument( "createData()", "not served" );
-    // lock.free();
+    lock.free();
     return -1;
   }
 
-  // lock.free();
-  // lock.lock();
+  lock.free();
+  lock.lock();
   
   bool failedToGetRecycledIndex = true;
   if ( !_recycledHeapIndices.empty(numberOfEntries) && allocation!=Allocation::DoNotUseAnyRecycledEntry ) {
@@ -288,7 +288,7 @@ int peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, NeighbourD
   if(static_cast<int>(_heapData.size()) > _maximumNumberOfHeapEntries) {
     _maximumNumberOfHeapEntries = static_cast<int>(_heapData.size());
   }
-  // lock.free();
+  lock.free();
 
   logTraceOutWith2Arguments("createData()", index, _numberOfHeapAllocations);
   return index;
@@ -373,7 +373,7 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
   #endif
   assertion4(_heapData.count(index)==1, _name, message, index, _heapData.size());
 
-  // tarch::multicore::Lock lock(_recycleAndDeleteSemaphore);
+  tarch::multicore::Lock lock(_recycleAndDeleteSemaphore);
 
   if (recycle) {
     getData(index).clear();
@@ -388,7 +388,7 @@ void peano::heap::DoubleHeap<MasterWorkerExchanger, JoinForkExchanger, Neighbour
 
   _numberOfHeapFrees++;
 
-  // lock.free();
+  lock.free();
 
   logTraceOut("deleteData(int,bool)");
 }
