@@ -58,6 +58,8 @@ namespace peano {
       static std::atomic_size_t _objCount;
       static std::atomic_size_t _totalCap;
       static std::atomic_size_t _totalSize;
+      static std::atomic_size_t _maxCap;
+      static std::atomic_size_t _maxSize;
 
       std::vector<double> _data;
       std::atomic_size_t _objID;
