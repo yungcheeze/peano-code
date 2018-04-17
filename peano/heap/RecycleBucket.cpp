@@ -63,10 +63,11 @@ void peano::heap::RecycleBucket::unsetLockAquiredFlag() {
 }
 
 int peano::heap::RecycleBucket::get_bucket_index(const int& heap_size) {
-  incrementRefCount();
-  int index = _data.count(heap_size) ? heap_size : -1;
-  decrementRefCount();
-  return index;
+  // incrementRefCount();
+  // int index = _data.count(heap_size) ? heap_size : -1;
+  // decrementRefCount();
+  // return index;
+  return 0;
 }
 
 
