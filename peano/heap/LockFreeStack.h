@@ -30,7 +30,7 @@ private:
   void init();
   void free();
   
-  struct RefCounter { unsigned pushCount; int popCount; };
+  struct RefCounter { unsigned pushCount; unsigned popCount; };
   std::atomic<RefCounter> _refcount;
   
   void incrementPopCount();
@@ -44,6 +44,8 @@ private:
   static tarch::logging::Log _log;
   std::atomic<unsigned> pp_count;
   std::atomic<unsigned> pp_loop;
+  std::atomic<unsigned> max_push_count;
+  std::atomic<unsigned> max_pop_count;
 
 public:
   HeadNode head;

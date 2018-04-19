@@ -20,6 +20,9 @@ void LockFreeStack::decrementPopCount(){
 #ifndef DCAS
   RefCounter expected, new_val;
   expected = _refcount.load();
+  unsigned max_c = max_pop_count.load();
+  if (expected.popCount > max_c)
+    max_c = max_pop_count.exchange(expected.popCount);
   new_val = expected;
   --new_val.popCount;
   while (!_refcount.compare_exchange_weak(expected, new_val)) {
@@ -45,6 +48,9 @@ void LockFreeStack::decrementPushCount(){
 #ifndef DCAS
   RefCounter expected, new_val;
   expected = _refcount.load();
+  unsigned max_c = max_push_count.load();
+  if (expected.pushCount > max_c)
+    max_c = max_push_count.exchange(expected.pushCount);
   new_val = expected;
   --new_val.pushCount;
   while (!_refcount.compare_exchange_weak(expected, new_val)) {
@@ -83,6 +89,9 @@ LockFreeStack::~LockFreeStack() {
            << "count " << pp_count.load() << "; "
            << "loops " << pp_loop.load() << "; "
            << "avg " << pp_loop.load()/pp_count.load() << "; ");
+  logInfo( "~LockFreeStack()", "concurrency: "
+           << "max_pushes " << max_push_count.load() << "; "
+           << "max_pops " << max_pop_count.load() << "; ");
   }
 }
 
@@ -92,6 +101,8 @@ void LockFreeStack::init() {
   rhead.a_top.exchange(tail);
   pp_count.exchange(0);
   pp_loop.exchange(0);
+  max_push_count.exchange(0);
+  max_pop_count.exchange(0);
 }
 
 void LockFreeStack::free() {
