@@ -3,6 +3,8 @@
 
 #include <atomic>
 #include "tarch/multicore/BooleanSemaphore.h"
+#include "tarch/logging/Log.h"
+#include "tarch/logging/CommandLineLogger.h"
 
 class Node
 {
@@ -38,6 +40,10 @@ private:
 
   void node_push(HeadNode &hn, Node *new_top);
   Node* node_pop(HeadNode &hn);
+
+  static tarch::logging::Log _log;
+  std::atomic<unsigned> pp_count;
+  std::atomic<unsigned> pp_loop;
 
 public:
   HeadNode head;

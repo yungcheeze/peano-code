@@ -1,5 +1,6 @@
 #include "peano/heap/LockFreeStack.h"
 #include "tarch/multicore/Lock.h"
+tarch::logging::Log LockFreeStack::_log("peano::heap::LockFreeStack");
 
 void LockFreeStack::incrementPopCount(){
 #ifndef DCAS
@@ -76,12 +77,21 @@ LockFreeStack& LockFreeStack::operator=(const LockFreeStack &rhs)
 }
 LockFreeStack::~LockFreeStack() {
   free();
+  unsigned pc = pp_count.load();
+  if(pc != 0){
+  logInfo( "~LockFreeStack()", "cas loopbacks: "
+           << "count " << pp_count.load() << "; "
+           << "loops " << pp_loop.load() << "; "
+           << "avg " << pp_loop.load()/pp_count.load() << "; ");
+  }
 }
 
 void LockFreeStack::init() {
   tail = new Node();
   head.a_top.exchange(tail);
   rhead.a_top.exchange(tail);
+  pp_count.exchange(0);
+  pp_loop.exchange(0);
 }
 
 void LockFreeStack::free() {
@@ -95,19 +105,25 @@ void LockFreeStack::free() {
 }
 
 void LockFreeStack::node_push(HeadNode &hn, Node *new_top) {
+  ++pp_count;
+  ++pp_loop;
   Node *curr_top = hn.a_top.load();
   new_top->next = curr_top;
   while(!hn.a_top.compare_exchange_weak(curr_top, new_top)){
+    ++pp_loop;
     new_top->next = curr_top;
   }
 }
 
 Node* LockFreeStack::node_pop(HeadNode &hn) {
+  ++pp_count;
+  ++pp_loop;
   Node *curr_top = hn.a_top.load();
   if(curr_top == tail) return 0;
   Node *new_top = curr_top;
   new_top = curr_top->next;
   while(!hn.a_top.compare_exchange_weak(curr_top, new_top)){
+    ++pp_loop;
     if(curr_top == tail) return 0;
     new_top = curr_top->next;
   }
