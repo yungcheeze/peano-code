@@ -44,6 +44,8 @@ private:
   static tarch::logging::Log _log;
   std::atomic<unsigned> pp_count;
   std::atomic<unsigned> pp_loop;
+  std::atomic<unsigned> rc_count;
+  std::atomic<unsigned> rc_loop;
   std::atomic<unsigned> max_push_count;
   std::atomic<unsigned> max_pop_count;
 

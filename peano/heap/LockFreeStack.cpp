@@ -4,12 +4,15 @@ tarch::logging::Log LockFreeStack::_log("peano::heap::LockFreeStack");
 
 void LockFreeStack::incrementPopCount(){
 #ifndef DCAS
+  ++rc_count;
+  ++rc_loop;
   RefCounter expected, new_val;
   expected = _refcount.load();
   expected.pushCount = 0;
   new_val = expected;
   ++new_val.popCount;
   while (!_refcount.compare_exchange_weak(expected, new_val)) {
+    ++rc_loop;
     expected.pushCount = 0;
     new_val.popCount = expected.popCount + 1;
   }
@@ -33,12 +36,15 @@ void LockFreeStack::decrementPopCount(){
 
 void LockFreeStack::incrementPushCount(){
 #ifndef DCAS
+  ++rc_count;
+  ++rc_loop;
   RefCounter expected, new_val;
   expected = _refcount.load();
   expected.popCount = 0;
   new_val = expected;
   ++new_val.pushCount;
   while (!_refcount.compare_exchange_weak(expected, new_val)) {
+    ++rc_loop;
     expected.popCount = 0;
     new_val.pushCount = expected.pushCount + 1;
   }
@@ -89,6 +95,10 @@ LockFreeStack::~LockFreeStack() {
            << "count " << pp_count.load() << "; "
            << "loops " << pp_loop.load() << "; "
            << "avg " << pp_loop.load()/pp_count.load() << "; ");
+  logInfo( "~LockFreeStack()", "rc loopbacks: "
+           << "count " << rc_count.load() << "; "
+           << "loops " << rc_loop.load() << "; "
+           << "avg " << rc_loop.load()/rc_count.load() << "; ");
   logInfo( "~LockFreeStack()", "concurrency: "
            << "max_pushes " << max_push_count.load() << "; "
            << "max_pops " << max_pop_count.load() << "; ");
@@ -101,6 +111,8 @@ void LockFreeStack::init() {
   rhead.a_top.exchange(tail);
   pp_count.exchange(0);
   pp_loop.exchange(0);
+  rc_count.exchange(0);
+  rc_loop.exchange(0);
   max_push_count.exchange(0);
   max_pop_count.exchange(0);
 }
