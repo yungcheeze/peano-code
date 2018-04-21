@@ -42,10 +42,14 @@ private:
   Node* node_pop(HeadNode &hn);
 
   static tarch::logging::Log _log;
-  std::atomic<unsigned> pp_count;
-  std::atomic<unsigned> pp_loop;
-  std::atomic<unsigned> rc_count;
-  std::atomic<unsigned> rc_loop;
+  std::atomic<unsigned> push_count;
+  std::atomic<unsigned> push_loop;
+  std::atomic<unsigned> pop_count;
+  std::atomic<unsigned> pop_loop;
+  std::atomic<unsigned> push_rc_count;
+  std::atomic<unsigned> push_rc_loop;
+  std::atomic<unsigned> pop_rc_count;
+  std::atomic<unsigned> pop_rc_loop;
   std::atomic<unsigned> max_push_count;
   std::atomic<unsigned> max_pop_count;
 
